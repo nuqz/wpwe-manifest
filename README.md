@@ -2,7 +2,9 @@
 
 [Webpack](https://webpack.js.org/) plugin which generates [WebExtension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions) manifest file(s).
 
-## Installation
+## Add plugin to your project
+
+Use one of your favourite package managers
 
 `$ npm i --save-dev wpwe-manifest`
 
@@ -10,21 +12,54 @@ or
 
 `$ yarn add --dev wpwe-manifest`
 
-## Usage
+## Basics
 
-You may want to prepare [`manifest.json`](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json) template for your WebExtension. 
+Following example shows minimal plugin setup:
 
-> Actually you can use JavaScript objects instead of file templates.
+```js
+// Require plugin package
+const wpwe = require('wpwe-manifest')
 
-The next are a few simple rules that should be followed.
+// Represents WebExtension manifest file
+const manifestOptions = {
+    name: 'WebExtension name',
+    version: '0.0.1-beta'
+}
+
+const myWebpackConfig = {
+    plugins: [
+        new wpwe.Plugin({
+            // (required)
+            manifest: new wpwe.Manifest(manifestOptions),
+
+            // (optional) default "manifest.json"
+            filename: 'browser_manifest.json',
+
+            // (optional) these are passed to JSON.stringify(...)
+            replacer: myReplacer,
+            space: mySpacer
+        }),
+        
+        ...
+    ],
+    
+    ...
+}
+```
+
+`manifestOptions` represents [`manifest.json`](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json) file using following rules:
 
 > [`manifest_version`](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/manifest_version) option with value 2 will be added automatically and will not be mutable.
 
+> `name` and `version` keys are required by WebExtensions and plugin will throw an exception.
+
 > Chunks names may be used instead of real file paths where possible (e.g. in `background.scripts`, `content_scripts[i].css`, etc). When webpack finishes compilation chunk names will be substituted by real file paths in the output manifest file.
 
-> Chunks, which are required on HTML pages (e.g. `popup.html`, `options.html`), should be injected into that pages by webpack and be accessible when you open page as file in browser.
+> Chunks, which are required by HTML pages (e.g. `popup.html`, `options.html`), should be injected into that pages by webpack and be accessible when you open page as file in browser.
 
-The following code snippet is example of how manifest template file may look like:
+## Extended example
+
+You may want to prepare `manifest.json` template file for your WebExtension. The following snippet is how that file may look like:
 
 ```json
 // src/webExtension/manifest.json
@@ -55,7 +90,7 @@ The following code snippet is example of how manifest template file may look lik
 }
 ```
 
-The next part is to configure webpack, for example:
+The next step is to configure webpack:
 
 ```js
 // webpack.config.js
@@ -70,7 +105,7 @@ const wpwe = require('wpwe-manifest')
 const pkg = require('./package.json')
 
 // Require manifest template from file and add values from package.json
-const manifest = Object.assign({}, require('./src/webExtension/manifest.json'), {
+const manifestOptions = Object.assign({}, require('./src/webExtension/manifest.json'), {
         version: pkg.version,
         description: pkg.description,
         author: pkg.author
@@ -99,16 +134,9 @@ module.exports = {
 
             ...
         }),
-        new wpwe.Plugin({
-            manifest: new wpwe.Manifest(manifest),
-
-            // (optional) default "manifest.json"
-            filename: 'browser_manifest.json',
-
-            // (optional) these are passed to JSON.stringify(...)
-            replacer: myReplacer,
-            space: mySpacer
-        })
+        new wpwe.Plugin({ manifest: new wpwe.Manifest(manifestOptions) }),
+        
+        ...
     ]
 }
 ```
