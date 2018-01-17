@@ -1,6 +1,6 @@
 # wpwe-manifest
 
-Webpack plugin which generates WebExtension manifest file(s).
+[Webpack](https://webpack.js.org/) plugin which generates [WebExtension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions) manifest file(s).
 
 ## Installation
 
@@ -16,7 +16,7 @@ You may want to prepare [`manifest.json`](https://developer.mozilla.org/en-US/Ad
 
 > Actually you can use JavaScript objects instead of file templates.
 
-The next are few simple rules that should be followed.
+The next are a few simple rules that should be followed.
 
 > [`manifest_version`](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json/manifest_version) option with value 2 will be added automatically and will not be mutable.
 
